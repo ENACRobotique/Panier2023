@@ -1,4 +1,4 @@
-with open("mario.wav", "rb") as fEntree:
+with open("oneUpMario.wav", "rb") as fEntree:
     dataL = fEntree.readlines()
 data = dataL[0]
 for i in range(1,len (dataL)):
