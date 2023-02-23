@@ -6,7 +6,7 @@
 
 typedef enum {
   IDLE,
-  PLAYNG_START_SOUND,
+  PLAYING_START_SOUND,
   PLAYING_COIN,
   PLAYING_ONE_UP
 }soundPlayerState_t;
@@ -16,7 +16,7 @@ XT_Wav_Class coinSound(marioCoin_wav);
 XT_Wav_Class oneUpSound(oneUpMario_wav);
 XT_Wav_Class windowsXPSound(windowsXP_wav);
 int cherryNumber=0;
-soundPlayerState_t state=PLAYNG_START_SOUND;
+soundPlayerState_t state=PLAYING_START_SOUND;
 
 void setup() {
   // put your setup code here, to run once:
@@ -39,7 +39,7 @@ void loop() {
       delay(500);
       gainCherry();//Code temporaire (à dégager quand on aura un compteur qui marche)
       break;
-    case PLAYNG_START_SOUND:
+    case PLAYING_START_SOUND:
       if(!windowsXPSound.Playing){
         state = IDLE;
       }
