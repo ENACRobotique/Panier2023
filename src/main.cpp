@@ -1,10 +1,12 @@
 #include <Arduino.h>
 #include "../ressource/oneUpSoundData.h"
 #include "../ressource/marioCoinSoundData.h"
+#include "../ressource/windowsXPSoundData.h"
 #include <XT_DAC_Audio.h>
 
 typedef enum {
   IDLE,
+  PLAYNG_START_SOUND,
   PLAYING_COIN,
   PLAYING_ONE_UP
 }soundPlayerState_t;
@@ -12,15 +14,16 @@ typedef enum {
 XT_DAC_Audio_Class DacAudio (25,0);
 XT_Wav_Class coinSound(marioCoin_wav);
 XT_Wav_Class oneUpSound(oneUpMario_wav);
+XT_Wav_Class windowsXPSound(windowsXP_wav);
 int cherryNumber=0;
-soundPlayerState_t state=IDLE;
+soundPlayerState_t state=PLAYNG_START_SOUND;
 
 void setup() {
   // put your setup code here, to run once:
-  
   oneUpSound.Speed = 2;
   coinSound.Speed = 2;
   DacAudio.DacVolume=100 ;
+  DacAudio.Play(&windowsXPSound);
 }
 
 void gainCherry(void){
@@ -35,6 +38,11 @@ void loop() {
     case IDLE:
       delay(500);
       gainCherry();//Code temporaire (à dégager quand on aura un compteur qui marche)
+      break;
+    case PLAYNG_START_SOUND:
+      if(!windowsXPSound.Playing){
+        state = IDLE;
+      }
       break;
     case PLAYING_COIN:
       if(!coinSound.Playing){
