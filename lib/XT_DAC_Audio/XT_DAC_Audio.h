@@ -19,7 +19,7 @@
 #pragma once
 #include "MusicDefinitions.h"
 
-#define BUFFER_SIZE_DEFAULT 4000 			    // Size of buffer to store data to send to DAC. 3 bytes minimum!
+#define BUFFER_SIZE_DEFAULT 80 			    // Size of buffer to store data to send to DAC. 3 bytes minimum!
 												// 4000 bytes (Default) should allow for very slow main loops
 												// that repeat only about every 100Hz, If your main loop is much faster
 												// than this and the VAST majority will be you can safely reduce this size
