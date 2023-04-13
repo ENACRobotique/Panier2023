@@ -1,65 +1,51 @@
 #include <Arduino.h>
-#include "../ressource/oneUpSoundData.h"
-#include "../ressource/marioCoinSoundData.h"
-#include "../ressource/windowsXPSoundData.h"
 #include <XT_DAC_Audio.h>
+#include <iostream>
+#include <string>
+#include "dj.h"
+#include "digipos.h"
+#define SOUND_PIN 25
+#define COUNT_BUTTON 39
+char test[] = "test0";
+int buttonPressed =0;
+uint32_t lastPressedTimeStamp =0;
+XT_DAC_Audio_Class dacAudio(SOUND_PIN,0);
+DJukeBox soundPlayer(&dacAudio);
+WD202A display;
 
-typedef enum {
-  IDLE,
-  PLAYING_START_SOUND,
-  PLAYING_COIN,
-  PLAYING_ONE_UP
-}soundPlayerState_t;
-
-XT_DAC_Audio_Class DacAudio (25,0);
-XT_Wav_Class coinSound(marioCoin_wav);
-XT_Wav_Class oneUpSound(oneUpMario_wav);
-XT_Wav_Class windowsXPSound(windowsXP_wav);
+char buffer[14];
 int cherryNumber=0;
-soundPlayerState_t state=PLAYING_START_SOUND;
 
 void setup() {
+  pinMode(25,OUTPUT);
+  display.init(&Serial2, RX_pin, TX_pin);
+  display.clearDisplay();
+  pinMode(COUNT_BUTTON,INPUT);
   // put your setup code here, to run once:
-  oneUpSound.Speed = 2;
-  coinSound.Speed = 2;
-  DacAudio.DacVolume=100 ;
-  DacAudio.Play(&windowsXPSound);
+
 }
 
 void gainCherry(void){
   cherryNumber++;
-  state=PLAYING_COIN;
-  DacAudio.Play(&coinSound);
+
+  soundPlayer.playSound(1);
+  sprintf(buffer,"Cerises : %d",cherryNumber);
+  display.clearDisplay();
+
+  display.moveLine(0,1);
+  display.write(buffer, ((cherryNumber >=10) ? 12 : 11));
 }
 
 void loop() {
-  DacAudio.FillBuffer();
-  switch(state){
-    case IDLE:
-      delay(500);
-      gainCherry();//Code temporaire (à dégager quand on aura un compteur qui marche)
-      break;
-    case PLAYING_START_SOUND:
-      if(!windowsXPSound.Playing){
-        state = IDLE;
-      }
-      break;
-    case PLAYING_COIN:
-      if(!coinSound.Playing){
-        if (! (cherryNumber%10)){
-          delay(100);
-          state=PLAYING_ONE_UP;
-          DacAudio.Play(&oneUpSound);
-        }
-        else{
-          state=IDLE;
-        }
-      }
-      break;
-    case PLAYING_ONE_UP:
-      if (!oneUpSound.Playing){
-        state=IDLE;
-      }
-      break;
+  soundPlayer.update();
+  if (!digitalRead(COUNT_BUTTON)){
+    lastPressedTimeStamp = millis();
+    buttonPressed = 1;
   }
+  else if(buttonPressed && (millis() - lastPressedTimeStamp)>10){
+    buttonPressed--;
+    gainCherry();
+  }
+  
 }
+
