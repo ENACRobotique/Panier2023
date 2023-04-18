@@ -46,7 +46,7 @@ void loop() {
     lastPressedTimeStamp = millis();
     buttonPressed = 1;
   }
-  else if(buttonPressed && (millis() - lastPressedTimeStamp)>0){
+  else if(buttonPressed && (millis() - lastPressedTimeStamp)>5){
     buttonPressed=0;
     gainCherry();
   }
